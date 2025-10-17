@@ -1,7 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:remit_bi/view/screens/login_screen.dart';
+import 'package:remit_bi/data/hive_boxes.dart';
+import 'package:remit_bi/view/screens/login/login_screen.dart';
+import 'package:remit_bi/view/screens/signup/signup_screen.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -14,8 +16,10 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
+    final loggedIn = HiveBoxes.userBox.get('isLoggedIn', defaultValue: false);
+
     Future.delayed(const Duration(seconds: 3), () {
-      Get.offAll(() => const LoginScreen());
+      Get.offAll(() => loggedIn ? const LoginScreen() : const SignupScreen());
     });
   }
 

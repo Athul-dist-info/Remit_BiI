@@ -25,6 +25,7 @@ import 'package:remit_bi/view/screens/new_customers_analysis.dart';
 import 'package:remit_bi/view/screens/service_wise_rem_analysis.dart';
 import 'package:remit_bi/view/widgets/custom_horizontal_bar_graph.dart';
 import 'package:remit_bi/view/widgets/custom_pie_chart.dart';
+import 'package:remit_bi/view/widgets/loading_indicator.dart';
 import 'package:remit_bi/view/widgets/stacked_vertical_bar_graph.dart';
 import 'package:remit_bi/view/widgets/vertical_bar_graph.dart';
 
@@ -46,6 +47,193 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final allAnalysisCards = {
+      "REM1": _buildAnalysisCard(
+        title: 'Product Wise Remittance Analysis',
+        code: 'REM1',
+        chart: CustomHorizontalBarChart(
+          chartData:
+              ServiceRemDummyData.remittanceData
+                  .map((model) => REM1ChartData(model))
+                  .toList(),
+          // fromDate: ServiceRemDummyData.fromDate,
+          // toDate: ServiceRemDummyData.toDate,
+          serviceColors: ServiceRemDummyData.getServiceColors(),
+          legendItems: ServiceRemDummyData.legendItems,
+          yAxisLabel: 'Months',
+          xAxisLabel: 'Transaction Count',
+          sortByMonth: true,
+        ),
+        ontap: () {
+          Get.to(
+            () => ServiceWiseRemittanceAnalysis(
+              title: 'Product Wise Remittance Analysis',
+              analysisCode: 'REM1',
+            ),
+          );
+        },
+      ),
+      "REM2": _buildAnalysisCard(
+        from: 100,
+        title: 'Country&Branch Wise Remittance Analysis',
+        code: 'REM2',
+        chart: Transform.scale(
+          scaleX: 0.9,
+          child: StackedVerticalBarGraph(
+            chartHeight: 180,
+            chartData:
+                CountryBranchRemData.remittanceData
+                    .map((model) => REM2ChartData(model))
+                    .toList(),
+            serviceColors: CountryBranchRemData.getServiceColors(),
+            legendItems: CountryBranchRemData.legendItems,
+            valueFormatter: ChartFormatters.formatInteger,
+            xAxisLabel: 'Country',
+            yAxisLabel: 'No of Trans',
+          ),
+        ),
+        ontap: () {
+          Get.to(
+            () => CountryBranchWiseRemAnalysis(
+              title: 'Country&Branch Wise Remittance Analysis',
+              analysisCode: 'REM2',
+            ),
+          );
+        },
+      ),
+      "REM3": _buildAnalysisCard(
+        from: 150,
+        title: 'Corp/Branch Wise Remittance Analysis',
+        code: 'REM3',
+        chart: CustomHorizontalBarChart(
+          chartData:
+              CorpBranchRemData.remittanceData
+                  .map((model) => REM3ChartData(model))
+                  .toList(),
+          // fromDate: ServiceRemDummyData.fromDate,
+          // toDate: ServiceRemDummyData.toDate,
+          serviceColors: CorpBranchRemData.getServiceColors(),
+          legendItems: CorpBranchRemData.legendItems,
+          yAxisLabel: 'Bank Name',
+          xAxisLabel: 'No of Trans',
+        ),
+        ontap: () {
+          Get.to(
+            () => CorpBranchWiseRemAnalysis(
+              title: 'Corp/Branch Wise Remittance Analysis',
+              analysisCode: 'REM3',
+            ),
+          );
+        },
+      ),
+      "REM4": _buildAnalysisCard(
+        from: 200,
+        title: 'Foreign Currency Sale Branch wise Remittance Analysis',
+        code: 'REM4',
+        chart: Transform.scale(
+          scaleX: 0.9,
+          child: StackedVerticalBarGraph(
+            chartHeight: 150,
+            chartData:
+                ForeignCurSaleData.remittanceData
+                    .map((model) => REM4ChartData(model))
+                    .toList(),
+            serviceColors: ForeignCurSaleData.getServiceColors(),
+            legendItems: ForeignCurSaleData.legendItems,
+            valueFormatter: ChartFormatters.formatToBillion,
+            xAxisLabel: 'Currency',
+            yAxisLabel: 'FxAmount',
+          ),
+        ),
+        ontap: () {
+          Get.to(
+            () => ForeignCurSaleWiseAnalysis(
+              title: 'Foreign Currency Sale Branch wise Remittance Analysis',
+              analysisCode: 'REM4',
+            ),
+          );
+        },
+      ),
+      "REM5": _buildAnalysisCard(
+        from: 250,
+        title: 'Nationality wise customers',
+        code: 'REM5',
+        chart: Transform.scale(
+          scaleX: 0.9,
+          child: VerticalBarGraph(
+            chartHeight: 200,
+            chartData:
+                NationalityCustomersData.remittanceData.map((model) {
+                  return model.toBarChartData(
+                    labelExtractor: (model) => model.nationality ?? 'Unknown',
+                    valueExtractor: (model) => model.txnCount.toDouble(),
+                  );
+                }).toList(),
+            xAxisLabel: 'Nationality',
+            yAxisLabel: 'No of Trans',
+            valueFormatter: ChartFormatters.formatToBillion,
+          ),
+        ),
+        ontap: () {
+          Get.to(
+            () => NationalityWiseCustomerAnalysis(
+              title: 'Nationality wise customers',
+              analysisCode: 'REM5',
+            ),
+          );
+        },
+      ),
+      "REM6": _buildAnalysisCard(
+        from: 300,
+        title: 'New Retained customers',
+        code: 'REM6',
+        chart: CustomPieChart(
+          chartHeight: 200,
+          useWideLayout: true,
+          chartData:
+              NewRetainedCustomersData.remittanceData
+                  .map((model) => REM6PieData(model))
+                  .toList(),
+          serviceColors: NewRetainedCustomersData.getServiceColors(),
+        ),
+        ontap: () {
+          Get.to(
+            () => NewRetainedCustomersAnalysis(
+              title: 'New Retained customers',
+              analysisCode: 'REM6',
+            ),
+          );
+        },
+      ),
+      "REM7": _buildAnalysisCard(
+        from: 350,
+        title: 'Corporate/Individual Branch Wise',
+        code: 'REM7',
+        chart: Transform.scale(
+          scale: 0.9,
+          child: StackedVerticalBarGraph(
+            chartHeight: 180,
+            chartData:
+                CorpIndividualRemData.remittanceData
+                    .map((model) => REM7ChartData(model))
+                    .toList(),
+            serviceColors: CorpIndividualRemData.getServiceColors(),
+            legendItems: CorpIndividualRemData.legendItems,
+            valueFormatter: ChartFormatters.formatToBillion,
+            xAxisLabel: 'Branch',
+            yAxisLabel: 'No of Trans',
+          ),
+        ),
+        ontap: () {
+          Get.to(
+            () => CorpIndividualBranchWiseAnalysis(
+              title: 'Corporate/Individual Branch Wise',
+              analysisCode: 'REM7',
+            ),
+          );
+        },
+      ),
+    };
     return Scaffold(
       backgroundColor: Colors.grey[100],
       appBar: _buildAppbar(),
@@ -69,193 +257,27 @@ class _HomeScreenState extends State<HomeScreen> {
                 onChanged: (value) => remContrler.searchQuery.value = value,
               ),
             ),
-            _buildAnalysisCard(
-              title: 'Product Wise Remittance Analysis',
-              code: 'REM1',
-              chart: CustomHorizontalBarChart(
-                chartData:
-                    ServiceRemDummyData.remittanceData
-                        .map((model) => REM1ChartData(model))
-                        .toList(),
-                // fromDate: ServiceRemDummyData.fromDate,
-                // toDate: ServiceRemDummyData.toDate,
-                serviceColors: ServiceRemDummyData.getServiceColors(),
-                legendItems: ServiceRemDummyData.legendItems,
-                yAxisLabel: 'Months',
-                xAxisLabel: 'Transaction Count',
-                sortByMonth: true,
-              ),
-              ontap: () {
-                Get.to(
-                  () => ServiceWiseRemittanceAnalysis(
-                    title: 'Product Wise Remittance Analysis',
-                    analysisCode: 'REM1',
-                  ),
-                );
-              },
-            ),
-            _buildAnalysisCard(
-              from: 100,
-              title: 'Country&Branch Wise Remittance Analysis',
-              code: 'REM2',
-              chart: Transform.scale(
-                scaleX: 0.9,
-                child: StackedVerticalBarGraph(
-                  chartHeight: 180,
-                  chartData:
-                      CountryBranchRemData.remittanceData
-                          .map((model) => REM2ChartData(model))
-                          .toList(),
-                  serviceColors: CountryBranchRemData.getServiceColors(),
-                  legendItems: CountryBranchRemData.legendItems,
-                  valueFormatter: ChartFormatters.formatInteger,
-                  xAxisLabel: 'Country',
-                  yAxisLabel: 'No of Trans',
-                ),
-              ),
-              ontap: () {
-                Get.to(
-                  () => CountryBranchWiseRemAnalysis(
-                    title: 'Country&Branch Wise Remittance Analysis',
-                    analysisCode: 'REM2',
-                  ),
-                );
-              },
-            ),
-            _buildAnalysisCard(
-              from: 150,
-              title: 'Corp/Branch Wise Remittance Analysis',
-              code: 'REM3',
-              chart: CustomHorizontalBarChart(
-                chartData:
-                    CorpBranchRemData.remittanceData
-                        .map((model) => REM3ChartData(model))
-                        .toList(),
-                // fromDate: ServiceRemDummyData.fromDate,
-                // toDate: ServiceRemDummyData.toDate,
-                serviceColors: CorpBranchRemData.getServiceColors(),
-                legendItems: CorpBranchRemData.legendItems,
-                yAxisLabel: 'Bank Name',
-                xAxisLabel: 'No of Trans',
-              ),
-              ontap: () {
-                Get.to(
-                  () => CorpBranchWiseRemAnalysis(
-                    title: 'Corp/Branch Wise Remittance Analysis',
-                    analysisCode: 'REM3',
-                  ),
-                );
-              },
-            ),
-            _buildAnalysisCard(
-              from: 200,
-              title: 'Foreign Currency Sale Branch wise Remittance Analysis',
-              code: 'REM4',
-              chart: Transform.scale(
-                scaleX: 0.9,
-                child: StackedVerticalBarGraph(
-                  chartHeight: 150,
-                  chartData:
-                      ForeignCurSaleData.remittanceData
-                          .map((model) => REM4ChartData(model))
-                          .toList(),
-                  serviceColors: ForeignCurSaleData.getServiceColors(),
-                  legendItems: ForeignCurSaleData.legendItems,
-                  valueFormatter: ChartFormatters.formatToBillion,
-                  xAxisLabel: 'Currency',
-                  yAxisLabel: 'FxAmount',
-                ),
-              ),
-              ontap: () {
-                Get.to(
-                  () => ForeignCurSaleWiseAnalysis(
-                    title:
-                        'Foreign Currency Sale Branch wise Remittance Analysis',
-                    analysisCode: 'REM4',
-                  ),
-                );
-              },
-            ),
-            _buildAnalysisCard(
-              from: 250,
-              title: 'Nationality wise customers',
-              code: 'REM5',
-              chart: Transform.scale(
-                scaleX: 0.9,
-                child: VerticalBarGraph(
-                  chartHeight: 200,
-                  chartData:
-                      NationalityCustomersData.remittanceData.map((model) {
-                        return model.toBarChartData(
-                          labelExtractor:
-                              (model) => model.nationality ?? 'Unknown',
-                          valueExtractor: (model) => model.txnCount.toDouble(),
-                        );
-                      }).toList(),
-                  xAxisLabel: 'Nationality',
-                  yAxisLabel: 'No of Trans',
-                  valueFormatter: ChartFormatters.formatToBillion,
-                ),
-              ),
-              ontap: () {
-                Get.to(
-                  () => NationalityWiseCustomerAnalysis(
-                    title: 'Nationality wise customers',
-                    analysisCode: 'REM5',
-                  ),
-                );
-              },
-            ),
-            _buildAnalysisCard(
-              from: 300,
-              title: 'New Retained customers',
-              code: 'REM6',
-              chart: CustomPieChart(
-                chartHeight: 200,
-                useWideLayout: true,
-                chartData:
-                    NewRetainedCustomersData.remittanceData
-                        .map((model) => REM6PieData(model))
-                        .toList(),
-                serviceColors: NewRetainedCustomersData.getServiceColors(),
-              ),
-              ontap: () {
-                Get.to(
-                  () => NewRetainedCustomersAnalysis(
-                    title: 'New Retained customers',
-                    analysisCode: 'REM6',
-                  ),
-                );
-              },
-            ),
-            _buildAnalysisCard(
-              from: 350,
-              title: 'Corporate/Individual Branch Wise',
-              code: 'REM7',
-              chart: Transform.scale(
-                scale: 0.9,
-                child: StackedVerticalBarGraph(
-                  chartHeight: 180,
-                  chartData:
-                      CorpIndividualRemData.remittanceData
-                          .map((model) => REM7ChartData(model))
-                          .toList(),
-                  serviceColors: CorpIndividualRemData.getServiceColors(),
-                  legendItems: CorpIndividualRemData.legendItems,
-                  valueFormatter: ChartFormatters.formatToBillion,
-                  xAxisLabel: 'Branch',
-                  yAxisLabel: 'No of Trans',
-                ),
-              ),
-              ontap: () {
-                Get.to(
-                  () => CorpIndividualBranchWiseAnalysis(
-                    title: 'Corporate/Individual Branch Wise',
-                    analysisCode: 'REM7',
-                  ),
-                );
-              },
-            ),
+
+            Obx(() {
+              final filteredAnalysisCards =
+                  remContrler.filteredAnalysisList
+                      .map((code) => allAnalysisCards[code.code])
+                      .whereType<Widget>()
+                      .toList();
+              return remContrler.isLoading.isTrue
+                  ? Center(child: LoadingIndicator())
+                  : remContrler.filteredAnalysisList.isEmpty
+                  ? Center(child: Text('No Data Found'))
+                  : Column(
+                    children: List.generate(filteredAnalysisCards.length, (
+                      index,
+                    ) {
+                      final card = filteredAnalysisCards[index];
+
+                      return card;
+                    }),
+                  );
+            }),
           ],
         ),
       ),
@@ -280,15 +302,15 @@ class _HomeScreenState extends State<HomeScreen> {
         'REMIT BI',
         style: TextStyle(color: Colors.white, fontWeight: FontWeight.w500),
       ),
-      actions: [
-        CircleAvatar(
-          backgroundColor: Colors.white,
-          child: Icon(
-            Icons.person_outline,
-            color: Color.fromARGB(255, 38, 99, 205),
-          ),
-        ),
-      ],
+      // actions: [
+      //   CircleAvatar(
+      //     backgroundColor: Colors.white,
+      //     child: Icon(
+      //       Icons.person_outline,
+      //       color: Color.fromARGB(255, 38, 99, 205),
+      //     ),
+      //   ),
+      // ],
     );
   }
 

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:remit_bi/controller/auth_controller.dart';
 import 'package:remit_bi/controller/remittance_controller.dart';
-import 'package:remit_bi/view/screens/home_screen.dart';
 import 'package:remit_bi/view/screens/splash_screen.dart';
 
 void main() async {
@@ -18,13 +18,13 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Get.put(RemittanceController());
+    Get.lazyPut(() => AuthController());
     return GetMaterialApp(
       title: 'Remit BI',
       theme: ThemeData(
         scaffoldBackgroundColor: Colors.white,
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
-      // home: HomeScreen(),
       home: SplashScreen(),
     );
   }

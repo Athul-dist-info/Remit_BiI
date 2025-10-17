@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
-import 'package:remit_bi/view/screens/forget_mpin_screen.dart';
-import 'package:remit_bi/view/screens/home_screen.dart';
-import 'package:remit_bi/view/screens/signup_screen.dart';
+import 'package:remit_bi/controller/auth_controller.dart';
+import 'package:remit_bi/view/screens/login/forget_mpin_screen.dart';
+import 'package:remit_bi/view/screens/signup/signup_screen.dart';
 import 'package:remit_bi/view/widgets/custom_textbutton.dart';
+import 'package:remit_bi/view/widgets/loader.dart';
 import 'package:remit_bi/view/widgets/pin_put.dart';
 import 'package:remit_bi/view/widgets/primary_button.dart';
 
@@ -14,8 +15,13 @@ class LoginScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final width = MediaQuery.sizeOf(context).width;
+    final authController = Get.put(AuthController());
     final mpinCntrl = TextEditingController();
+    authController.mpinErrorText = '';
+    authController.isLoading.value = false;
+
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       body: SafeArea(
         bottom: false,
         child: Stack(
@@ -55,11 +61,21 @@ class LoginScreen extends StatelessWidget {
                       ),
                     ),
                     SizedBox(height: 20),
-                    MpinPut(
-                      controller: mpinCntrl,
-                      errorText: '',
-                      onChanged: (s) {},
-                      onCompleted: (p0) async {},
+                    GetBuilder<AuthController>(
+                      id: 'login-mpin',
+                      builder: (controller) {
+                        return MpinPut(
+                          controller: mpinCntrl,
+                          errorText: controller.mpinErrorText,
+                          onChanged: (s) {
+                            if (controller.mpinErrorText.isNotEmpty) {
+                              controller.mpinErrorText = '';
+                              controller.update(['login-mpin']);
+                            }
+                          },
+                          onCompleted: (p0) async {},
+                        );
+                      },
                     ),
 
                     SizedBox(height: 15),
@@ -78,11 +94,25 @@ class LoginScreen extends StatelessWidget {
                               },
                             ),
                           ),
-                          PrimaryButton(
-                            label: 'Login',
-                            width: width,
-                            onPressed: () => Get.offAll(HomeScreen()),
-                          ),
+
+                          Obx(() {
+                            return authController.isLoading.isTrue
+                                ? Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 50,
+                                  ),
+                                  child: loader(),
+                                )
+                                : PrimaryButton(
+                                  label: 'Login',
+                                  width: width,
+                                  onPressed:
+                                      () => authController.validateMPIN(
+                                        mpinCntrl.text,
+                                      ),
+                                );
+                          }),
+
                           CustomTextButton(
                             text1: 'New user?',
                             text2: ' Sign in for the first time.',

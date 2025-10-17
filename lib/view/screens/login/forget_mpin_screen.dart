@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
-import 'package:remit_bi/view/screens/signup_screen.dart';
+import 'package:remit_bi/controller/auth_controller.dart';
+import 'package:remit_bi/view/screens/signup/signup_screen.dart';
 import 'package:remit_bi/view/widgets/custom_textbutton.dart';
+import 'package:remit_bi/view/widgets/loader.dart';
 import 'package:remit_bi/view/widgets/primary_button.dart';
 
 class ForgetMpinScreen extends StatelessWidget {
@@ -10,8 +12,14 @@ class ForgetMpinScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final formKey = GlobalKey<FormState>();
     final width = MediaQuery.sizeOf(context).width;
+    final authController = Get.put(AuthController());
+    final emailCtrl = TextEditingController();
+    authController.isLoading.value = false;
+
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       body: SafeArea(
         bottom: false,
         child: Stack(
@@ -62,28 +70,55 @@ class ForgetMpinScreen extends StatelessWidget {
                             style: TextStyle(color: Colors.grey.shade700),
                           ),
                           SizedBox(height: 20),
-                          TextFormField(
-                            decoration: InputDecoration(
-                              isDense: true,
-                              filled: true,
-                              fillColor: Color(0xffF5F5F5),
-                              hintText: 'example@gmail.com',
-                              hintStyle: TextStyle(
-                                fontSize: 14,
-                                color: Colors.grey,
+                          Form(
+                            key: formKey,
+                            child: TextFormField(
+                              controller: emailCtrl,
+                              decoration: InputDecoration(
+                                isDense: true,
+                                filled: true,
+                                fillColor: Color(0xffF5F5F5),
+                                hintText: 'example@gmail.com',
+                                hintStyle: TextStyle(
+                                  fontSize: 14,
+                                  color: Colors.grey,
+                                ),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                  borderSide: BorderSide.none,
+                                ),
                               ),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(10),
-                                borderSide: BorderSide.none,
-                              ),
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Please enter your email';
+                                }
+                                if (!GetUtils.isEmail(value)) {
+                                  return 'Enter a valid email address';
+                                }
+                                return null;
+                              },
                             ),
                           ),
 
-                          PrimaryButton(
-                            label: 'Send Reset Link',
-                            width: width,
-                            onPressed: () {},
-                          ),
+                          Obx(() {
+                            return authController.isLoading.isTrue
+                                ? Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 50,
+                                  ),
+                                  child: loader(),
+                                )
+                                : PrimaryButton(
+                                  label: 'Send Reset Link',
+                                  width: width,
+                                  onPressed: () {
+                                    if (formKey.currentState!.validate()) {
+                                      authController.resetMPIN();
+                                    }
+                                  },
+                                );
+                          }),
+
                           Center(
                             child: CustomTextButton(
                               text1: 'New user?',
