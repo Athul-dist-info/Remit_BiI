@@ -24,90 +24,98 @@ class SetMpinScreen extends StatelessWidget {
         child: Stack(
           alignment: Alignment.bottomLeft,
           children: [
-            SizedBox(
-              height: double.infinity,
-              width: double.infinity,
-              child: SingleChildScrollView(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    IconButton(
-                      icon: Icon(
-                        Icons.arrow_back,
-                        size: 28,
-                        color: const Color.fromARGB(255, 38, 99, 205),
+            Positioned(
+              bottom: 0,
+              left: 0,
+              child: SvgPicture.asset('assets/svg/curve.svg'),
+            ),
+            Scaffold(
+              backgroundColor: Colors.transparent,
+              body: SizedBox(
+                height: double.infinity,
+                width: double.infinity,
+                child: SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      IconButton(
+                        icon: Icon(
+                          Icons.arrow_back,
+                          size: 28,
+                          color: const Color.fromARGB(255, 38, 99, 205),
+                        ),
+                        onPressed: () => Get.back(),
                       ),
-                      onPressed: () => Get.back(),
-                    ),
-                    Center(child: SvgPicture.asset('assets/svg/login.svg')),
-                    SizedBox(height: 50),
-                    Padding(
-                      padding: EdgeInsets.symmetric(horizontal: width * 0.08),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Set MPIN',
-                            style: TextStyle(
-                              fontSize: 25,
-                              fontWeight: FontWeight.bold,
+                      Center(child: SvgPicture.asset('assets/svg/login.svg')),
+                      SizedBox(height: 50),
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: width * 0.08),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Set MPIN',
+                              style: TextStyle(
+                                fontSize: 25,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
-                          ),
-                          SizedBox(height: 20),
-                          Text(
-                            'Enter 6-digit MPIN',
-                            style: TextStyle(
-                              fontSize: 16,
-                              color: Color(0xff00275D),
+                            SizedBox(height: 20),
+                            Text(
+                              'Enter 6-digit MPIN',
+                              style: TextStyle(
+                                fontSize: 16,
+                                color: Color(0xff00275D),
+                              ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
-                    ),
-                    SizedBox(height: 20),
-                    GetBuilder<AuthController>(
-                      id: 'set-mpin',
-                      builder: (controller) {
-                        return MpinPut(
-                          controller: mpinCntrl,
-                          errorText: controller.mpinErrorText,
-                          obscureText: false,
-                          onChanged: (s) {
-                            if (controller.mpinErrorText.isNotEmpty) {
-                              controller.mpinErrorText = '';
-                              controller.update(['set-mpin']);
-                            }
-                          },
-                          onCompleted: (p0) async {},
-                        );
-                      },
-                    ),
-
-                    SizedBox(height: 15),
-
-                    Obx(() {
-                      return authController.isLoading.isTrue
-                          ? Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 50),
-                            child: loader(),
-                          )
-                          : Padding(
-                            padding: EdgeInsets.symmetric(
-                              horizontal: width * 0.08,
-                            ),
-                            child: PrimaryButton(
-                              label: 'Continue',
-                              width: width,
-                              onPressed:
-                                  () => authController.saveMPIN(mpinCntrl.text),
-                            ),
+                      SizedBox(height: 20),
+                      GetBuilder<AuthController>(
+                        id: 'set-mpin',
+                        builder: (controller) {
+                          return MpinPut(
+                            controller: mpinCntrl,
+                            errorText: controller.mpinErrorText,
+                            obscureText: false,
+                            onChanged: (s) {
+                              if (controller.mpinErrorText.isNotEmpty) {
+                                controller.mpinErrorText = '';
+                                controller.update(['set-mpin']);
+                              }
+                            },
+                            onCompleted: (p0) async {},
                           );
-                    }),
-                  ],
+                        },
+                      ),
+
+                      SizedBox(height: 15),
+
+                      Obx(() {
+                        return authController.isLoading.isTrue
+                            ? Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 50),
+                              child: loader(),
+                            )
+                            : Padding(
+                              padding: EdgeInsets.symmetric(
+                                horizontal: width * 0.08,
+                              ),
+                              child: PrimaryButton(
+                                label: 'Continue',
+                                width: width,
+                                onPressed:
+                                    () =>
+                                        authController.saveMPIN(mpinCntrl.text),
+                              ),
+                            );
+                      }),
+                    ],
+                  ),
                 ),
               ),
             ),
-            SvgPicture.asset('assets/svg/curve.svg'),
           ],
         ),
       ),

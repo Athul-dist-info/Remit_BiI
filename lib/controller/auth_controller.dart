@@ -18,7 +18,7 @@ class AuthController extends GetxController {
 
   Future<void> signUpUser() async {
     isLoading.value = true;
-    await Future.delayed(const Duration(milliseconds: 500));
+    await Future.delayed(const Duration(milliseconds: 1000));
     final box = HiveBoxes.userBox;
     box.put('company', companyCtrl.text);
     box.put('email', emailCtrl.text);

@@ -18,7 +18,7 @@ class _SplashScreenState extends State<SplashScreen> {
     super.initState();
     final loggedIn = HiveBoxes.userBox.get('isLoggedIn', defaultValue: false);
 
-    Future.delayed(const Duration(seconds: 3), () {
+    Future.delayed(const Duration(seconds: 2), () {
       Get.offAll(() => loggedIn ? const LoginScreen() : const SignupScreen());
     });
   }

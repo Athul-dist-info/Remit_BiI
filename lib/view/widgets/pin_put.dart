@@ -40,6 +40,7 @@ class MpinPut extends StatelessWidget {
               focusNode: focusNode,
               obscureText: obscureText,
               errorText: errorText.isNotEmpty ? errorText : null,
+              scrollPadding: const EdgeInsets.only(bottom: 100),
               onCompleted: onCompleted,
               onChanged: onChanged,
               defaultPinTheme: _pinTheme(context, errorText, borderRadius: 10),
